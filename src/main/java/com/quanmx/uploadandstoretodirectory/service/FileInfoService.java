@@ -3,10 +3,11 @@ package com.quanmx.uploadandstoretodirectory.service;
 import com.quanmx.uploadandstoretodirectory.exception.NotFoundException;
 import com.quanmx.uploadandstoretodirectory.model.FileInfor;
 import com.quanmx.uploadandstoretodirectory.repository.FileInfoRepository;
+import com.quanmx.uploadandstoretodirectory.utils.FileUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +39,9 @@ public class FileInfoService implements IFileInfoService {
                 .name(fileName)
                 .type(multipartFile.getContentType())
                 .build();
-        return fileInfoRepository.save(fileInfor);
+        FileInfor result = fileInfoRepository.save(fileInfor);
+        result.setPath(null);
+        return result;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class FileInfoService implements IFileInfoService {
 
     @Override
     public FileInfor getFileById(String id) {
-        FileInfor fileInfor = fileInfoRepository.findByName(id).orElse(null);
+        FileInfor fileInfor = fileInfoRepository.findById(id).orElse(null);
         if (fileInfor == null) {
             throw new NotFoundException("Could not find out any file");
         }
